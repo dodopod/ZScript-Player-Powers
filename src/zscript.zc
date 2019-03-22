@@ -1,0 +1,35 @@
+version "3.7.2"
+
+class PowerMantling : Inventory
+{
+    bool isMantling;
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (!owner || !owner.player) return;
+
+        if (JustPressed(BT_Jump) && CanMantle())
+        {
+            Console.Printf("Mantle");
+        }
+    }
+
+    // Returns true if the player is in front of a wall which is too high to step over, but low enough to mantle
+    bool CanMantle()
+    {
+        return false;
+    }
+
+
+    bool IsPressed(int bt)
+    {
+        return owner && owner.player && owner.player.cmd.buttons & bt;
+    }
+
+    bool JustPressed(int bt)
+    {
+        return owner && owner.player && (owner.player.cmd.buttons & bt) && !(owner.player.oldButtons & bt);
+    }
+}
