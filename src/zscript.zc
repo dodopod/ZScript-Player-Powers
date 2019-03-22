@@ -7,8 +7,8 @@ class PowerMantling : Inventory
 
     bool climbing;
 
-    int maxLedgeHeight;
-    int climbSpeed;
+    double maxLedgeHeight;
+    double climbSpeed;
 
     property MaxLedgeHeight: maxLedgeHeight;
     property ClimbSpeed: climbSpeed;
@@ -48,6 +48,7 @@ class PowerMantling : Inventory
                 climbing = true;
                 A_PlaySound("*Climb", CHAN_BODY);
                 mo.viewBob = 0.0;
+                player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetDownState());
             }
         }
         else
@@ -71,24 +72,21 @@ class PowerMantling : Inventory
             if (!climbing)  // Exit climbing state
             {
                 mo.viewBob = 1.0;
-                player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetUpState());
                 player.jumpTics = -1;
+
+                let psp = player.GetPsprite(PSP_WEAPON);
+                psp.y = weaponBottom;
+                player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetUpState());
             }
         }
 
         if (climbing)
         {
-            // Weapon will reset to Ready state, so we need to set it to Down state every tic
-            player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetDownState());
-
+            // Weapon will reset to Ready state, so we need to keep it down
             let psp = player.GetPsprite(PSP_WEAPON);
-            if (psp.y == WEAPONTOP) // Keep weapon down
+            if (player.readyWeapon.InStateSequence(psp.curState, player.readyWeapon.GetReadyState()))
             {
-                psp.y = WEAPONBOTTOM;
-            }
-            else    // Lower weapon twice as fast
-            {
-                psp.y += 6;
+                psp.y = weaponBottom;
             }
 
             if (ledgeHeight <= mo.maxStepHeight) // Hold onto ledge at top, if player can't get on it
