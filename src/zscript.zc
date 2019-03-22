@@ -2,7 +2,22 @@ version "3.7.2"
 
 class PowerMantling : Inventory
 {
+    Property MaxLedgeHeight : maxLedgeHeight;
+    Property MantleRadius : mantleRadius;
+
+
+    Default
+    {
+        PowerMantling.MaxLedgeHeight 48;
+        PowerMantling.MantleRadius 24;
+    }
+
+
+    double maxLedgeHeight;
+    double mantleRadius;
+
     bool isMantling;
+
 
     override void Tick()
     {
@@ -10,16 +25,23 @@ class PowerMantling : Inventory
 
         if (!owner || !owner.player) return;
 
-        if (JustPressed(BT_Jump) && CanMantle())
+        double ledgeHeight = GetLedgeHeight();
+
+        if (JustPressed(BT_Jump) && ledgeHeight > owner.maxStepHeight && ledgeHeight <= maxLedgeHeight)
         {
             Console.Printf("Mantle");
         }
     }
 
-    // Returns true if the player is in front of a wall which is too high to step over, but low enough to mantle
-    bool CanMantle()
+    double GetLedgeHeight()
     {
-        return false;
+        double z = owner.pos.z;
+
+        owner.SetZ(z + maxLedgeHeight);
+        double ledgeHeight = owner.GetZAt(mantleRadius, 0) - z;
+        owner.SetZ(z);
+
+        return ledgeHeight;
     }
 
 
