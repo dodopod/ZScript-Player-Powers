@@ -2,22 +2,22 @@ version "3.7.2"
 
 class PowerMantling : Inventory
 {
-    Property MaxLedgeHeight : maxLedgeHeight;
-    Property MantleRadius : mantleRadius;
+    const climbReach = 8;
+    const thrustSpeed = 4;
 
+    bool climbing;
+
+    int maxLedgeHeight;
+    int climbSpeed;
+
+    property MaxLedgeHeight: maxLedgeHeight;
+    property ClimbSpeed: climbSpeed;
 
     Default
     {
         PowerMantling.MaxLedgeHeight 48;
-        PowerMantling.MantleRadius 24;
+        PowerMantling.ClimbSpeed 2;
     }
-
-
-    double maxLedgeHeight;
-    double mantleRadius;
-
-    bool isMantling;
-
 
     override void Tick()
     {
@@ -25,33 +25,80 @@ class PowerMantling : Inventory
 
         if (!owner || !owner.player) return;
 
-        double ledgeHeight = GetLedgeHeight();
+        let player = owner.player;
+        let mo = player.mo;
 
-        if (JustPressed(BT_Jump) && ledgeHeight > owner.maxStepHeight && ledgeHeight <= maxLedgeHeight)
+        double ledgeHeight;
         {
-            Console.Printf("Mantle");
+            vector3 oldPos = mo.pos;
+
+            mo.SetXyz(oldPos + (0, 0, maxLedgeHeight));   // Account for thin 3D floors
+            ledgeHeight = mo.GetZAt(radius + climbReach, 0) - oldPos.z;
+            mo.SetXyz(oldPos);
         }
-    }
 
-    double GetLedgeHeight()
-    {
-        double z = owner.pos.z;
+        bool jump = player.cmd.buttons & BT_JUMP;
+        double clearance = mo.GetZAt(mo.radius + climbReach, 0, 0, GZF_CEILING) - mo.GetZAt(mo.radius + climbReach, 0);
 
-        owner.SetZ(z + maxLedgeHeight);
-        double ledgeHeight = owner.GetZAt(mantleRadius, 0) - z;
-        owner.SetZ(z);
+        // Start/stop climbing
+        if (!climbing)
+        {
+            if (jump && ledgeHeight > mo.maxStepHeight && ledgeHeight <= maxLedgeHeight)
+            {
+                climbing = true;
+                A_PlaySound("*Climb", CHAN_BODY);
+                mo.viewBob = 0.0;
+            }
+        }
+        else
+        {
+            if (!jump || ledgeHeight > maxLedgeHeight)  // Drop down/get knocked down from ledge
+            {
+                climbing = false;
+            }
+            else if (ledgeHeight <= mo.maxStepHeight && clearance >= 0.5 * mo.height)    // Reach top of ledge
+            {
+                climbing = false;
 
-        return ledgeHeight;
-    }
+                // Crouch, so player can fit into small spaces
+                player.crouchFactor = 0.5;
+                mo.SetOrigin(mo.pos + (0, 0, 0.5 * mo.fullHeight), false);   // Keep view from jerking
+                player.viewHeight *= 0.5;
 
+                mo.VelFromAngle(thrustSpeed, mo.angle);  // Thrust player onto ledge
+            }
 
-    bool IsPressed(int bt)
-    {
-        return owner && owner.player && owner.player.cmd.buttons & bt;
-    }
+            if (!climbing)  // Exit climbing state
+            {
+                mo.viewBob = 1.0;
+                player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetUpState());
+                player.jumpTics = -1;
+            }
+        }
 
-    bool JustPressed(int bt)
-    {
-        return owner && owner.player && (owner.player.cmd.buttons & bt) && !(owner.player.oldButtons & bt);
+        if (climbing)
+        {
+            // Weapon will reset to Ready state, so we need to set it to Down state every tic
+            player.SetPsprite(PSP_WEAPON, player.readyWeapon.GetDownState());
+
+            let psp = player.GetPsprite(PSP_WEAPON);
+            if (psp.y == WEAPONTOP) // Keep weapon down
+            {
+                psp.y = WEAPONBOTTOM;
+            }
+            else    // Lower weapon twice as fast
+            {
+                psp.y += 6;
+            }
+
+            if (ledgeHeight <= mo.maxStepHeight) // Hold onto ledge at top, if player can't get on it
+            {
+                mo.vel = (0, 0, 0);
+            }
+            else    // Climb ledge
+            {
+                mo.vel = (0, 0, climbSpeed);
+            }
+        }
     }
 }
