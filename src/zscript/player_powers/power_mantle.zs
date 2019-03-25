@@ -1,4 +1,4 @@
-class PowerMantling : Inventory
+class PowerMantle : Inventory
 {
     const climbReach = 8;
     const thrustSpeed = 4;
@@ -13,8 +13,8 @@ class PowerMantling : Inventory
 
     Default
     {
-        PowerMantling.MaxLedgeHeight 48;
-        PowerMantling.ClimbSpeed 2;
+        PowerMantle.MaxLedgeHeight 48;
+        PowerMantle.ClimbSpeed 2;
     }
 
     override void Tick()

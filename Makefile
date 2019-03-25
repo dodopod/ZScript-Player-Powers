@@ -1,5 +1,5 @@
 sources=$(shell find src -type f)
-target=mantling.pk3
+target=powers.pk3
 
 build/$(target): $(sources)
 	7z a -tzip $@ ./src/*
