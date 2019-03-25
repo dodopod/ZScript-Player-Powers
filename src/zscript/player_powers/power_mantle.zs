@@ -40,7 +40,7 @@ class PowerMantle : Inventory
         // Start/stop climbing
         if (!climbing)
         {
-            if (JustPressed(BT_Jump) && ledgeHeight > mo.maxStepHeight && ledgeHeight <= maxLedgeHeight)
+            if (IsPressed(BT_Jump) && ledgeHeight > mo.maxStepHeight && ledgeHeight <= maxLedgeHeight)
             {
                 climbing = true;
                 A_PlaySound("*climb", CHAN_BODY);
@@ -100,10 +100,5 @@ class PowerMantle : Inventory
     bool IsPressed(int bt)
     {
         return owner && owner.player && owner.player.cmd.buttons & bt;
-    }
-
-    bool JustPressed(int bt)
-    {
-        return owner && owner.player && (owner.player.cmd.buttons & bt) && !(owner.player.oldButtons & bt);
     }
 }
