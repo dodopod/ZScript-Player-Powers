@@ -7,8 +7,8 @@ class PowerDoubleJump : Inventory
     {
         Inventory.MaxAmount 1;
 
-        DoubleJumpGiver.MaxJumps 2;
-        DoubleJumpGiver.JumpStrength 1;
+        PowerDoubleJump.MaxJumps 2;
+        PowerDoubleJump.JumpStrength 1;
     }
 
     int maxJumps;
