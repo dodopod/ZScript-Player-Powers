@@ -17,9 +17,9 @@ class PowerMantle : Inventory
         PowerMantle.ClimbSpeed 2;
     }
 
-    override void Tick()
+    override void DoEffect()
     {
-        Super.Tick();
+        Super.DoEffect();
 
         if (!owner || !owner.player) return;
 

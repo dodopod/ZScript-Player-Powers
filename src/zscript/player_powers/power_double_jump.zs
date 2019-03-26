@@ -16,9 +16,9 @@ class PowerDoubleJump : Inventory
 
     int jumpCount;
 
-    override void Tick()
+    override void DoEffect()
     {
-        Super.Tick();
+        Super.DoEffect();
 
         if (!owner || !owner.player) return;
 
