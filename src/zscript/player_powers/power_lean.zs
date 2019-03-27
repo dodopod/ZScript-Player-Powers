@@ -1,5 +1,8 @@
 class PowerLean : Inventory
 {
+    bool bLeaning;
+    Vector3 realPos;
+
     override void DoEffect()
     {
         Super.DoEffect();
@@ -10,7 +13,20 @@ class PowerLean : Inventory
 
         if (cmd.roll)
         {
-            double right = AngleToVector(owner.angle - 90);
+            if (!bLeaning)
+            {
+                bLeaning = true;
+                realPos = owner.pos;
+                Console.Printf("Lean");
+            }
+
+            Vector3 right = (AngleToVector(owner.angle - 90), 0);
+            double t = cmd.roll;
+        }
+        else if (bLeaning)
+        {
+            bLeaning = false;
+            Console.Printf("Stop leaning");
         }
     }
 }
