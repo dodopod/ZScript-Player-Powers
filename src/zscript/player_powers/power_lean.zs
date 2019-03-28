@@ -11,22 +11,14 @@ class PowerLean : Inventory
         let player = owner.player;
         UserCmd cmd = player.cmd;
 
-        if (cmd.roll)
+        double t = cmd.roll * 360.0 / 65536;
+        if (owner.roll < t)
         {
-            if (!bLeaning)
-            {
-                bLeaning = true;
-                realPos = owner.pos;
-                Console.Printf("Lean");
-            }
-
-            Vector3 right = (AngleToVector(owner.angle - 90), 0);
-            double t = cmd.roll;
+            owner.roll = Min(owner.roll + 4, t);
         }
-        else if (bLeaning)
+        else if (owner.roll > t)
         {
-            bLeaning = false;
-            Console.Printf("Stop leaning");
+            owner.roll = Max(owner.roll - 4, t);
         }
     }
 }
