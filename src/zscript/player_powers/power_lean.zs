@@ -2,7 +2,6 @@ class PowerLean : Inventory
 {
     bool bLeaning;
     Vector3 offset;
-    double offsetZ;
     double theta;
 
     override void DoEffect()
@@ -24,10 +23,10 @@ class PowerLean : Inventory
             theta = Max(theta - 4, target);
         }
 
-        owner.roll = theta;
+        owner.A_SetRoll(theta, SPF_Interpolate);
 
         Vector3 right = (AngleToVector(owner.angle - 90), 0);
-        Vector3 newOffset = right * 16 * Sin(theta);
+        Vector3 newOffset = right * 24 * Sin(theta);
         owner.SetOrigin(owner.pos - offset + newOffset, true);
         offset = newOffset;
 
