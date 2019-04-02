@@ -1,6 +1,6 @@
 class RollHandler : EventHandler
 {
-    const rollAmount = 90 * 65536.0 / 360;
+    const rollAmount = 22.5 * 65536.0 / 360;
 
     int roll;
 
