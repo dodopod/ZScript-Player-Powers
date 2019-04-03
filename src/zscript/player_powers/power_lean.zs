@@ -14,14 +14,7 @@ class PowerLean : Inventory
         UserCmd cmd = player.cmd;
 
         double target = cmd.roll * 360.0 / 65536;
-        if (theta < target)
-        {
-            theta = Min(theta + 4, target);
-        }
-        else if (theta > target)
-        {
-            theta = Max(theta - 4, target);
-        }
+        theta = Clamp(target, theta - 4, theta + 4);
 
         owner.A_SetRoll(theta, SPF_Interpolate);
 
