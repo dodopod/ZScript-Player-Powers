@@ -1,0 +1,7 @@
+/*
+0 = no lean
+1 = slide
+2 = head stays vertical
+3 = head tilts
+*/
+server int G_LeanMode = 3;
