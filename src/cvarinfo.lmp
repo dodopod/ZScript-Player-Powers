@@ -5,3 +5,4 @@
 3 = head tilts
 */
 server int G_LeanMode = 3;
+server float G_LeanAngle = 22.5;

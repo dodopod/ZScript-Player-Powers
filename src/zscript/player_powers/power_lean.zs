@@ -17,7 +17,8 @@ class PowerLean : Inventory
 
         if (mode <= 0) return;
 
-        double target = cmd.roll * 360.0 / 65536;
+        double leanAngle = CVar.FindCVar("G_LeanAngle").GetFloat();
+        double target = cmd.roll * 360.0 * leanAngle / (65536 * 4);
         double newTheta = Clamp(target, theta - 4, theta + 4);
 
         Vector3 right = (AngleToVector(owner.angle - 90), 0);
