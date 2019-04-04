@@ -17,11 +17,15 @@ class PowerLean : Inventory
 
         if (mode <= 0) return;
 
+        double oldTheta = theta;
         double target = cmd.roll * 360.0 / 65536;
         theta = Clamp(target, theta - 4, theta + 4);
 
+        if (owner.CheckBlock(0, AAPTR_Default, 0, 48 * Sin(theta))) theta = oldTheta;
+
         Vector3 right = (AngleToVector(owner.angle - 90), 0);
-        Vector3 newOffset = right * 24 * Sin(theta);
+        Vector3 newOffset = right * 48 * Sin(theta);
+
         owner.SetOrigin(owner.pos - offset + newOffset, true);
         offset = newOffset;
 
