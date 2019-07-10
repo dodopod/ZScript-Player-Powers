@@ -46,4 +46,10 @@ class Power6DoF : PowerFlight
         owner.A_SetPitch(pitch, SPF_Interpolate);
         owner.A_SetRoll(roll, SPF_Interpolate);
     }
+
+    override void EndEffect()
+    {
+        Super.EndEffect();
+        owner.A_SetRoll(0, SPF_Interpolate);
+    }
 }
